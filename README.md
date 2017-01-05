@@ -386,7 +386,7 @@ For deprecated methods of integrating with Rails, check [the wiki](https://githu
 
 ## I18n
 
-If you want thousands seperator and decimal mark to be same across all
+If you want thousands separator and decimal mark to be same across all
 currencies this can be defined in your `I18n` translation files.
 
 In an rails application this may look like:
