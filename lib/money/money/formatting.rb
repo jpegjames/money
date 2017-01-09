@@ -23,6 +23,17 @@ class Money
     #   Money.ca_dollar(100).format(:with_currency => true) #=> "$1.00 CAD"
     #   Money.us_dollar(85).format(:with_currency => true)  #=> "$0.85 USD"
     #
+    # @option rules [Integer] :precision (nil) Sets the
+    #  number of decimal places to display. This method is useful when using
+    #  a custom currency with more decimals (such as USD4) but you only want
+    #  to display a specific number of decimal places. 
+    #
+    # @example
+    #   Money.new(100, "USD4") #=> "$1.0000"
+    #   Money.new(100, "USD4", precision: 2) #=> "$1.00"
+    #   Money.new(100_125, "USD4", precision: 2) #=> "$1.13"
+    #   Money.new(100_125, "USD4", precision: 4) #=> "$1.1250"
+    #
     # @option rules [Boolean] :rounded_infinite_precision (false) Whether the
     #  amount of money should be rounded when using {infinite_precision}
     #
@@ -218,6 +229,12 @@ class Money
       symbol_value = symbol_value_from(rules)
 
       formatted = self.abs.to_s
+
+      if rules[:precision]
+        formatted.gsub!(/#{decimal_mark}/, '.') unless '.' == decimal_mark
+        formatted = "%.#{rules[:precision]}f" % formatted
+        formatted.gsub!(/\./, decimal_mark) unless '.' == decimal_mark
+      end
 
       if rules[:rounded_infinite_precision]
         formatted.gsub!(/#{decimal_mark}/, '.') unless '.' == decimal_mark

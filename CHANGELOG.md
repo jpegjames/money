@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.8.2
+- Added precision option for `format`
+
 ## 6.8.0
 - Ruby 2.4.0 support
 - Fixed UZS syntax

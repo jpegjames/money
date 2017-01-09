@@ -751,4 +751,72 @@ describe Money, "formatting" do
       end
     end
   end
+
+  context "when :precision option" do
+    before :each do
+      Money::Currency.register(JSON.parse(BAR, symbolize_names: true))
+      Money::Currency.register(JSON.parse(EU4, symbolize_names: true))
+    end
+
+    after :each do
+      Money::Currency.unregister(JSON.parse(BAR, symbolize_names: true))
+      Money::Currency.unregister(JSON.parse(EU4, symbolize_names: true))
+    end
+
+    it 'is USD or EUR with 0 precision' do
+      expect(Money.new(1999_98, "USD").format(precision: 0)).to eq("$2,000")
+      expect(Money.new(1999_35, "USD").format(precision: 0)).to eq("$1,999")
+
+      expect(Money.new(1999_98, "EUR").format(precision: 0)).to eq("€2.000")
+      expect(Money.new(1999_35, "EUR").format(precision: 0)).to eq("€1.999")
+    end
+
+    it 'is USD or EUR with precision of 2' do
+      # `format(precision: 2)` should be the same as no precision when using currency with 2 decimal places
+      expect(Money.new(1999_98, "USD").format(precision: 2)).to eq(Money.new(1999_98, "USD").format)
+      expect(Money.new(1999_98, "EUR").format(precision: 2)).to eq(Money.new(1999_98, "EUR").format)
+    end
+
+    it 'is USD or EUR with precision of 4' do
+      expect(Money.new(1999_98, "USD").format(precision: 4)).to eq("$1,999.9800")
+      expect(Money.new(1999_98, "EUR").format(precision: 4)).to eq("€1.999,9800")
+    end
+
+    it 'is JPY with 0 precision' do
+      # `format(precision: 0)` should be the same as no precision when using currency with no decimal places
+      expect(Money.new(199998, "JPY").format(precision: 0)).to eq(Money.new(199998, "JPY").format)
+      expect(Money.new(199935, "JPY").format(precision: 0)).to eq(Money.new(199935, "JPY").format)
+    end
+
+    it 'is USD with precision of 2' do
+      expect(Money.new(199998, "JPY").format(precision: 2)).to eq("¥199,998.00")
+    end
+
+    it 'is BAR or EU4 with no precision' do
+      expect(Money.new(1999_9812, "BAR").format).to eq("$1,999.9812")
+      expect(Money.new(1999_9812, "EU4").format).to eq("€1.999,9812")
+    end
+
+    it 'is BAR or EU4 with precision of 0' do
+      expect(Money.new(1999_9812, "BAR").format(precision: 0)).to eq("$2,000")
+      expect(Money.new(1999_9812, "EU4").format(precision: 0)).to eq("€2.000")
+    end
+
+    it 'is BAR or EU4 with precision of 2' do
+      expect(Money.new(1999_9812, "BAR").format(precision: 2)).to eq("$1,999.98")
+      expect(Money.new(1999_9812, "EU4").format(precision: 2)).to eq("€1.999,98")
+    end
+
+    it 'is BAR or EU4 with precision of 4' do
+      # `format(precision: 4)` should be the same as no precision when using currency with 4 decimal places
+      expect(Money.new(1999_9812, "BAR").format(precision: 4)).to eq(Money.new(1999_9812, "BAR").format)
+      expect(Money.new(1999_9812, "EU4").format(precision: 4)).to eq(Money.new(1999_9812, "EU4").format)
+    end
+
+    it 'is BAR or EU4 with precision of 6' do
+      expect(Money.new(1999_9812, "BAR").format(precision: 6)).to eq("$1,999.981200")
+      expect(Money.new(1999_9812, "EU4").format(precision: 6)).to eq("€1.999,981200")
+    end
+
+  end
 end
